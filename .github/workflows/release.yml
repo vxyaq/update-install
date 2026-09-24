@@ -32,8 +32,8 @@ jobs:
             --output installer/publish `
             -p:Version=$version `
             -p:InformationalVersion=$version `
-            -p:PublishSingleFile=true `
-            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:PublishSingleFile=false `
+            -p:SelfContained=true `
             -p:PublishReadyToRun=false
 
       - name: Install Inno Setup
@@ -56,6 +56,5 @@ jobs:
         run: |
           gh release create "${env:GITHUB_REF_NAME}" `
             "installer/output/KsyxisTweaks-Setup-$($env:GITHUB_REF_NAME.TrimStart('v'))-x64.exe" `
-            "installer/publish/KsyxisTweaks.exe" `
             --generate-notes `
             --title "Ksyxis Tweaks $($env:GITHUB_REF_NAME)"

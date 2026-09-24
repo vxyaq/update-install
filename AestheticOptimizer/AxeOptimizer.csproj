@@ -8,8 +8,8 @@
 		<UseWPF>true</UseWPF>
 		<AssemblyName>KsyxisTweaks</AssemblyName>
 		<RootNamespace>KsyxisTweaks</RootNamespace>
-		<Version>1.0.0</Version>
-		<InformationalVersion>1.0.0</InformationalVersion>
+		<Version>1.0.2</Version>
+		<InformationalVersion>1.0.2</InformationalVersion>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
