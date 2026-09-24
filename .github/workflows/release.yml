@@ -1,9 +1,8 @@
-name: Build and publish Ksyxis Tweaks
+name: Build Ksyxis Tweaks
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    tags: ["v*.*.*"]
 
 permissions:
   contents: write
@@ -11,50 +10,23 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
         with:
-          dotnet-version: 8.x
-
-      - name: Publish self-contained executable
+          node-version: 22
+          cache: npm
+      - name: Install WebView2 bootstrap requirements
         shell: pwsh
-        run: |
-          $version = "${env:GITHUB_REF_NAME}".TrimStart('v')
-          dotnet publish AestheticOptimizer/AxeOptimizer.csproj `
-            --configuration Release `
-            --runtime win-x64 `
-            --self-contained true `
-            --output installer/publish `
-            -p:Version=$version `
-            -p:InformationalVersion=$version `
-            -p:PublishSingleFile=false `
-            -p:SelfContained=true `
-            -p:PublishReadyToRun=false
-
-      - name: Install Inno Setup
-        shell: pwsh
-        run: choco install innosetup --no-progress --yes
-
-      - name: Build setup executable
-        shell: pwsh
-        run: |
-          $version = "${env:GITHUB_REF_NAME}".TrimStart('v')
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
-            "/DAppVersion=$version" `
-            "/DPublishDir=$pwd\installer\publish" `
-            installer/KsyxisTweaks.iss
-
-      - name: Publish GitHub release
-        shell: pwsh
+        run: npm install
+      - name: Build and publish Tauri bundles
+        uses: tauri-apps/tauri-action@v0
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "${env:GITHUB_REF_NAME}" `
-            "installer/output/KsyxisTweaks-Setup-$($env:GITHUB_REF_NAME.TrimStart('v'))-x64.exe" `
-            --generate-notes `
-            --title "Ksyxis Tweaks $($env:GITHUB_REF_NAME)"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Ksyxis Tweaks ${{ github.ref_name }}
+          releaseBody: Automated Windows build of Ksyxis Tweaks.
+          releaseDraft: false
+          prerelease: false
