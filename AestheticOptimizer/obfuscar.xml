@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<Obfuscator>
+	<Var name="InPath" value="." />
+	<Var name="OutPath" value=".\Obfuscated" />
+	<Var name="KeepPublicApi" value="false" />
+	<Var name="HidePrivateApi" value="true" />
+	<Var name="RenameProperties" value="false" />
+	<Var name="RenameEvents" value="false" />
+	<Var name="RenameFields" value="false" />
+	<Var name="EncryptStrings" value="true" />
+	<Var name="UseUnicodeNames" value="false" />
+	<Module file="KsyxisTweaks.dll">
+		<SkipType name="KsyxisTweaks.App" />
+		<SkipType name="KsyxisTweaks.LoginWindow" />
+		<SkipType name="KsyxisTweaks.MainWindow" />
+		<SkipType name="KsyxisTweaks.AxeSyncModel" />
+		<SkipNamespace name="Postgrest" />
+		<SkipNamespace name="Supabase" />
+		<SkipNamespace name="KeyAuth" />
+	</Module>
+</Obfuscator>

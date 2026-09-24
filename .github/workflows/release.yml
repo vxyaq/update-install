@@ -1,0 +1,61 @@
+name: Build and publish Ksyxis Tweaks
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Publish self-contained executable
+        shell: pwsh
+        run: |
+          $version = "${env:GITHUB_REF_NAME}".TrimStart('v')
+          dotnet publish AestheticOptimizer/AxeOptimizer.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output installer/publish `
+            -p:Version=$version `
+            -p:InformationalVersion=$version `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:PublishReadyToRun=false
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+
+      - name: Build setup executable
+        shell: pwsh
+        run: |
+          $version = "${env:GITHUB_REF_NAME}".TrimStart('v')
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            "/DAppVersion=$version" `
+            "/DPublishDir=$pwd\installer\publish" `
+            installer/KsyxisTweaks.iss
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${env:GITHUB_REF_NAME}" `
+            "installer/output/KsyxisTweaks-Setup-$($env:GITHUB_REF_NAME.TrimStart('v'))-x64.exe" `
+            "installer/publish/KsyxisTweaks.exe" `
+            --generate-notes `
+            --title "Ksyxis Tweaks $($env:GITHUB_REF_NAME)"

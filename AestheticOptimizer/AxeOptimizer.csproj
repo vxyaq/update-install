@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>KsyxisTweaks</AssemblyName>
+		<RootNamespace>KsyxisTweaks</RootNamespace>
+		<Version>1.0.0</Version>
+		<InformationalVersion>1.0.0</InformationalVersion>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<SelfContained>true</SelfContained>
+		<PublishReadyToRun>false</PublishReadyToRun>
+
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="KeyAuth.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="favicon.ico" />
+		<Resource Include="KeyAuth.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="KeyAuth.CSharpConsole.NugetExample" Version="1.0.0" />
+		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+		<PackageReference Include="Obfuscar" Version="2.2.50">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="supabase-csharp" Version="0.16.2" />
+		<PackageReference Include="System.Diagnostics.PerformanceCounter" Version="10.0.5" />
+		<PackageReference Include="System.Management" Version="10.0.5" />
+		<PackageReference Include="System.Speech" Version="10.0.5" />
+	</ItemGroup>
+
+	<Target Name="KsyxisSecurityRelease" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Release' And '$(SkipKsyxisSecurity)' != 'true'">
+		<Message Importance="high" Text="[KSYXIS] Rozpoczynam zabezpieczanie kodu..." />
+		<Exec Command="&quot;$(Obfuscar)&quot; &quot;$(ProjectDir)obfuscar.xml&quot;" WorkingDirectory="$(TargetDir)" />
+		<Copy SourceFiles="$(TargetDir)Obfuscated\KsyxisTweaks.dll" DestinationFiles="$(TargetDir)KsyxisTweaks.dll" OverwriteReadOnlyFiles="true" />
+		<Message Importance="high" Text="[KSYXIS] SUKCES: Kod został zabezpieczony i podmieniony w folderze Release!" />
+	</Target>
+
+</Project>

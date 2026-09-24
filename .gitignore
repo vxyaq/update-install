@@ -1,0 +1,15 @@
+# Build output
+**/bin/
+**/obj/
+installer/publish/
+installer/output/
+
+# Local tooling and IDE state
+.codex-tools/
+.vs/
+*.user
+*.suo
+
+# Local secrets and generated application state
+*.dat
+*.log
